@@ -85,6 +85,22 @@ to quickly create a Cobra application.`,
 			}
 		})
 
+		forEachTeamMember(db, func(tm *teamMember) {
+			err = createTeamMemberVertex(conn, tm)
+			if err != nil {
+				log.Printf("[ERROR] creating vertex between teamID '%v' and userID '%v'", tm.teamID, tm.userID)
+				log.Print(err)
+			}
+		})
+
+		forEachChannelMember(db, func(cm *channelMember) {
+			err = createChannelMemberVertex(conn, cm)
+			if err != nil {
+				log.Printf("[ERROR] creating vertex between channelID '%v' and userID '%v'", cm.channelID, cm.userID)
+				log.Print(err)
+			}
+		})
+
 		return nil
 	},
 }

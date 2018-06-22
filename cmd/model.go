@@ -60,3 +60,14 @@ type post struct {
 	deleteAt int
 	hashtags []string
 }
+
+type teamMember struct {
+	teamID   string
+	userID   string
+	deleteAt int
+}
+
+type channelMember struct {
+	channelID string
+	userID    string
+}

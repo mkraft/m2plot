@@ -13,6 +13,34 @@ func createTeamEdge(conn golangNeo4jBoltDriver.Conn, t *team) error {
 	return nil
 }
 
+func createTeamMemberVertex(conn golangNeo4jBoltDriver.Conn, tm *teamMember) error {
+	_, err := conn.ExecNeo(
+		`MATCH
+			(user:User {userID: {userID}}),
+			(team:Team {teamID: {teamID}})
+		CREATE (user)-[:MEMBER_OF]->(team)`,
+		map[string]interface{}{"teamID": tm.teamID, "userID": tm.userID},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func createChannelMemberVertex(conn golangNeo4jBoltDriver.Conn, cm *channelMember) error {
+	_, err := conn.ExecNeo(
+		`MATCH
+			(user:User {userID: {userID}}),
+			(channel:Channel {channelID: {channelID}})
+		CREATE (user)-[:MEMBER_OF]->(channel)`,
+		map[string]interface{}{"channelID": cm.channelID, "userID": cm.userID},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func createChannelEdge(conn golangNeo4jBoltDriver.Conn, c *channel) error {
 	_, err := conn.ExecNeo(
 		"CREATE (:Channel {channelID: {channelID}, name: {name}, createAt: {createAt}, deleteAt: {deleteAt}, type: 'open'})",

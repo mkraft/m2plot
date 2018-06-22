@@ -74,3 +74,37 @@ func posts(db *sql.DB, limit, offset int) ([]*post, error) {
 	}
 	return posts, nil
 }
+
+func teamMembers(db *sql.DB, limit, offset int) ([]*teamMember, error) {
+	var teamMembers []*teamMember
+	rows, err := db.Query("SELECT UserId, TeamId, DeleteAt FROM TeamMembers LIMIT $1 OFFSET $2", limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		teamMember := new(teamMember)
+		if err := rows.Scan(&teamMember.userID, &teamMember.teamID, &teamMember.deleteAt); err != nil {
+			return nil, err
+		}
+		teamMembers = append(teamMembers, teamMember)
+	}
+	return teamMembers, nil
+}
+
+func channelMembers(db *sql.DB, limit, offset int) ([]*channelMember, error) {
+	var channelMembers []*channelMember
+	rows, err := db.Query("SELECT UserId, ChannelId FROM ChannelMembers LIMIT $1 OFFSET $2", limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		channelMember := new(channelMember)
+		if err := rows.Scan(&channelMember.userID, &channelMember.channelID); err != nil {
+			return nil, err
+		}
+		channelMembers = append(channelMembers, channelMember)
+	}
+	return channelMembers, nil
+}
