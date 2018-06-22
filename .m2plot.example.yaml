@@ -1,0 +1,5 @@
+mattermost_db:
+        adapter: postgres
+        connectionString: "postgres://mmuser:mostest@localhost:5432/mattermost_test?sslmode=disable\u0026connect_timeout=30"
+neo4j:
+        connectionString: "bolt://neo4j:rx8qtjE%5DTdesCWej@localhost:7687"
