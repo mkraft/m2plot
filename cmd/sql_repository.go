@@ -24,14 +24,14 @@ func teams(db *sql.DB, limit, offset int) ([]*team, error) {
 
 func channels(db *sql.DB, limit, offset int) ([]*channel, error) {
 	var channels []*channel
-	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type FROM Channels LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type, TeamId FROM Channels LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		channel := new(channel)
-		if err := rows.Scan(&channel.id, &channel.name, &channel.createAt, &channel.deleteAt, &channel.Type); err != nil {
+		if err := rows.Scan(&channel.id, &channel.name, &channel.createAt, &channel.deleteAt, &channel.Type, &channel.teamID); err != nil {
 			return nil, err
 		}
 		channels = append(channels, channel)

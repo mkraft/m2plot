@@ -27,6 +27,7 @@ type channel struct {
 	createAt int
 	deleteAt int
 	Type     string
+	teamID   string
 }
 
 func (c *channel) displayType() string {

@@ -67,6 +67,11 @@ to quickly create a Cobra application.`,
 				log.Printf("[ERROR] creating edge for channel '%v'", c.name)
 				log.Print(err)
 			}
+			err = createChannelPartOfTeamVertex(conn, c)
+			if err != nil {
+				log.Printf("[ERROR] creating vertex between channelID '%v' and teamID '%v'", c.id, c.teamID)
+				log.Print(err)
+			}
 		})
 
 		forEachUser(db, func(u *user) {
@@ -86,13 +91,13 @@ to quickly create a Cobra application.`,
 
 			err = createPostedInChannelVertex(conn, p)
 			if err != nil {
-				log.Printf("[ERROR] creating vertex between for postID '%v' and channelID '%v", p.id, p.channelID)
+				log.Printf("[ERROR] creating vertex between postID '%v' and channelID '%v", p.id, p.channelID)
 				log.Print(err)
 			}
 
 			err = createPostedByUserVertex(conn, p)
 			if err != nil {
-				log.Printf("[ERROR] creating vertex between for postID '%v' and userID '%v", p.id, p.userID)
+				log.Printf("[ERROR] creating vertex between postID '%v' and userID '%v", p.id, p.userID)
 				log.Print(err)
 			}
 		})

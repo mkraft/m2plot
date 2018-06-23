@@ -93,3 +93,13 @@ func createPostedByUserVertex(conn golangNeo4jBoltDriver.Conn, p *post) error {
 	}
 	return nil
 }
+
+func createChannelPartOfTeamVertex(conn golangNeo4jBoltDriver.Conn, c *channel) error {
+	_, err := conn.ExecNeo("MATCH (channel:Channel {channelID: {channelID}}), (team:Team {teamID: {teamID}}) CREATE (channel)-[:PART_OF]->(team)",
+		map[string]interface{}{"channelID": c.id, "teamID": c.teamID},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
