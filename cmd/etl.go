@@ -36,7 +36,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sqlConn, err := sql.Open(viper.GetString("mattermost_db.adapter"), viper.GetString("mattermost_db.connectionString"))
+		sqlConn, err := sql.Open(
+			viper.GetString("mattermost_db.adapter"),
+			viper.GetString("mattermost_db.connectionString"),
+		)
 		if err != nil {
 			return err
 		}
