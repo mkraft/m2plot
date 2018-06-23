@@ -35,7 +35,7 @@ func forEachTeam(db *sql.DB, itemF func(*team) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }
 
 func forEachPublicChannel(db *sql.DB, itemF func(*channel) error) error {
@@ -53,7 +53,7 @@ func forEachPublicChannel(db *sql.DB, itemF func(*channel) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }
 
 func forEachUser(db *sql.DB, itemF func(*user) error) error {
@@ -71,7 +71,7 @@ func forEachUser(db *sql.DB, itemF func(*user) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }
 
 func forEachPublicPost(db *sql.DB, itemF func(*post) error) error {
@@ -89,7 +89,7 @@ func forEachPublicPost(db *sql.DB, itemF func(*post) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }
 
 func forEachChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
@@ -107,7 +107,7 @@ func forEachChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }
 
 func forEachTeamMember(db *sql.DB, itemF func(*teamMember) error) error {
@@ -125,5 +125,5 @@ func forEachTeamMember(db *sql.DB, itemF func(*teamMember) error) error {
 			}
 		}
 	}
-	return nil
+	return err
 }

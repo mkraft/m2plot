@@ -16,12 +16,14 @@ package cmd
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 )
 
 func teams(db *sql.DB, limit, offset int) ([]*team, error) {
 	var teams []*team
-	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type FROM Teams LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT Id, Name, CreateAt, DeleteAt, Type FROM Teams LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +40,8 @@ func teams(db *sql.DB, limit, offset int) ([]*team, error) {
 
 func publicChannels(db *sql.DB, limit, offset int) ([]*channel, error) {
 	var channels []*channel
-	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type, TeamId, CreatorId FROM Channels WHERE Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT Id, Name, CreateAt, DeleteAt, Type, TeamId, CreatorId FROM Channels WHERE Type = 'O' LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +58,8 @@ func publicChannels(db *sql.DB, limit, offset int) ([]*channel, error) {
 
 func users(db *sql.DB, limit, offset int) ([]*user, error) {
 	var users []*user
-	rows, err := db.Query("SELECT Id, Username, CreateAt, DeleteAt FROM Users LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT Id, Username, CreateAt, DeleteAt FROM Users LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +76,8 @@ func users(db *sql.DB, limit, offset int) ([]*user, error) {
 
 func publicPosts(db *sql.DB, limit, offset int) ([]*post, error) {
 	var posts []*post
-	rows, err := db.Query("SELECT Posts.Id, Message, Posts.CreateAt, Posts.DeleteAt, Hashtags, ChannelId, UserId FROM Posts JOIN Channels ON Channels.Id = Posts.ChannelId WHERE Channels.Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT Posts.Id, Message, Posts.CreateAt, Posts.DeleteAt, Hashtags, ChannelId, UserId FROM Posts JOIN Channels ON Channels.Id = Posts.ChannelId WHERE Channels.Type = 'O' AND Posts.Type = '' LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +96,8 @@ func publicPosts(db *sql.DB, limit, offset int) ([]*post, error) {
 
 func teamMembers(db *sql.DB, limit, offset int) ([]*teamMember, error) {
 	var teamMembers []*teamMember
-	rows, err := db.Query("SELECT UserId, TeamId, DeleteAt FROM TeamMembers LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT UserId, TeamId, DeleteAt FROM TeamMembers LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +114,8 @@ func teamMembers(db *sql.DB, limit, offset int) ([]*teamMember, error) {
 
 func publicChannelMembers(db *sql.DB, limit, offset int) ([]*channelMember, error) {
 	var channelMembers []*channelMember
-	rows, err := db.Query("SELECT UserId, ChannelId FROM ChannelMembers JOIN Channels.Id = ChannelMembers.ChannelId WHERE Channels.Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
+	query := fmt.Sprintf("SELECT UserId, ChannelId FROM ChannelMembers JOIN Channels ON Channels.Id = ChannelMembers.ChannelId WHERE Channels.Type = 'O' LIMIT %v OFFSET %v", limit, offset)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}

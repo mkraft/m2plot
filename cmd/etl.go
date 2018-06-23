@@ -20,6 +20,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	_ "github.com/lib/pq"
 
 	"github.com/johnnadratowski/golang-neo4j-bolt-driver"
