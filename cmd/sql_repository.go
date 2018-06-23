@@ -36,9 +36,9 @@ func teams(db *sql.DB, limit, offset int) ([]*team, error) {
 	return teams, nil
 }
 
-func channels(db *sql.DB, limit, offset int) ([]*channel, error) {
+func publicChannels(db *sql.DB, limit, offset int) ([]*channel, error) {
 	var channels []*channel
-	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type, TeamId, CreatorId FROM Channels LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := db.Query("SELECT Id, Name, CreateAt, DeleteAt, Type, TeamId, CreatorId FROM Channels WHERE Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +70,9 @@ func users(db *sql.DB, limit, offset int) ([]*user, error) {
 	return users, nil
 }
 
-func posts(db *sql.DB, limit, offset int) ([]*post, error) {
+func publicPosts(db *sql.DB, limit, offset int) ([]*post, error) {
 	var posts []*post
-	rows, err := db.Query("SELECT Id, Message, CreateAt, DeleteAt, Hashtags, ChannelId, UserId FROM Posts LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := db.Query("SELECT Posts.Id, Message, Posts.CreateAt, Posts.DeleteAt, Hashtags, ChannelId, UserId FROM Posts JOIN Channels ON Channels.Id = Posts.ChannelId WHERE Channels.Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +106,9 @@ func teamMembers(db *sql.DB, limit, offset int) ([]*teamMember, error) {
 	return teamMembers, nil
 }
 
-func channelMembers(db *sql.DB, limit, offset int) ([]*channelMember, error) {
+func publicChannelMembers(db *sql.DB, limit, offset int) ([]*channelMember, error) {
 	var channelMembers []*channelMember
-	rows, err := db.Query("SELECT UserId, ChannelId FROM ChannelMembers LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := db.Query("SELECT UserId, ChannelId FROM ChannelMembers JOIN Channels.Id = ChannelMembers.ChannelId WHERE Channels.Type = 'O' LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}

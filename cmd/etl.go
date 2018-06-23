@@ -65,11 +65,11 @@ and the following vertices:
 			return err
 		}
 
-		if err = forEachChannel(sqlConn, channelF(graphConn)); err != nil {
+		if err = forEachPublicChannel(sqlConn, channelF(graphConn)); err != nil {
 			return err
 		}
 
-		if err = forEachPost(sqlConn, postF(graphConn)); err != nil {
+		if err = forEachPublicPost(sqlConn, postF(graphConn)); err != nil {
 			return err
 		}
 

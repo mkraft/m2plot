@@ -38,11 +38,11 @@ func forEachTeam(db *sql.DB, itemF func(*team) error) error {
 	return nil
 }
 
-func forEachChannel(db *sql.DB, itemF func(*channel) error) error {
+func forEachPublicChannel(db *sql.DB, itemF func(*channel) error) error {
 	offset := 0
 	var batch []*channel
 	var err error
-	for batch, err = channels(db, batchSize, offset); len(batch) > 0; batch, err = channels(db, batchSize, offset+batchSize) {
+	for batch, err = publicChannels(db, batchSize, offset); len(batch) > 0; batch, err = publicChannels(db, batchSize, offset+batchSize) {
 		offset += batchSize
 		if err != nil {
 			return err
@@ -74,11 +74,11 @@ func forEachUser(db *sql.DB, itemF func(*user) error) error {
 	return nil
 }
 
-func forEachPost(db *sql.DB, itemF func(*post) error) error {
+func forEachPublicPost(db *sql.DB, itemF func(*post) error) error {
 	offset := 0
 	var batch []*post
 	var err error
-	for batch, err = posts(db, batchSize, offset); len(batch) > 0; batch, err = posts(db, batchSize, offset+batchSize) {
+	for batch, err = publicPosts(db, batchSize, offset); len(batch) > 0; batch, err = publicPosts(db, batchSize, offset+batchSize) {
 		offset += batchSize
 		if err != nil {
 			return err
@@ -96,7 +96,7 @@ func forEachChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
 	offset := 0
 	var batch []*channelMember
 	var err error
-	for batch, err = channelMembers(db, batchSize, offset); len(batch) > 0; batch, err = channelMembers(db, batchSize, offset+batchSize) {
+	for batch, err = publicChannelMembers(db, batchSize, offset); len(batch) > 0; batch, err = publicChannelMembers(db, batchSize, offset+batchSize) {
 		offset += batchSize
 		if err != nil {
 			return err
