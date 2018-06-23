@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,96 +36,130 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mmAdapter := viper.GetString("mattermost_db.adapter")
-		mmConnStr := viper.GetString("mattermost_db.connectionString")
-		db, err := sql.Open(mmAdapter, mmConnStr)
+		sqlAdapter := viper.GetString("mattermost_db.adapter")
+		sqlConnStr := viper.GetString("mattermost_db.connectionString")
+		sqlConn, err := sql.Open(sqlAdapter, sqlConnStr)
 		if err != nil {
 			return err
 		}
-		defer db.Close()
+		defer sqlConn.Close()
 
-		neo4jConnStr := viper.GetString("neo4j.connectionString")
+		graphConnStr := viper.GetString("neo4j.connectionString")
 		driver := golangNeo4jBoltDriver.NewDriver()
-		conn, err := driver.OpenNeo(neo4jConnStr)
+		graphConn, err := driver.OpenNeo(graphConnStr)
 		if err != nil {
 			return err
 		}
-		defer conn.Close()
+		defer graphConn.Close()
 
-		forEachTeam(db, func(t *team) {
-			err = createTeamEdge(conn, t)
-			if err != nil {
-				log.Printf("[ERROR] creating edge for team '%v'", t.name)
-				log.Print(err)
-			}
-		})
+		if err = forEachTeam(sqlConn, teamF(graphConn)); err != nil {
+			return err
+		}
 
-		forEachUser(db, func(u *user) {
-			err = createUserEdge(conn, u)
-			if err != nil {
-				log.Printf("[ERROR] creating edge for user '%v'", u.username)
-				log.Print(err)
-			}
-		})
+		if err = forEachUser(sqlConn, userF(graphConn)); err != nil {
+			return err
+		}
 
-		forEachChannel(db, func(c *channel) {
-			err = createChannelEdge(conn, c)
-			if err != nil {
-				log.Printf("[ERROR] creating edge for channel '%v'", c.name)
-				log.Print(err)
-			}
+		if err = forEachChannel(sqlConn, channelF(graphConn)); err != nil {
+			return err
+		}
 
-			err = createChannelPartOfTeamVertex(conn, c)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between channelID '%v' and teamID '%v'", c.id, c.teamID)
-				log.Print(err)
-			}
+		if err = forEachPost(sqlConn, postF(graphConn)); err != nil {
+			return err
+		}
 
-			err = createUserCreatedChannelVertex(conn, c)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between userID '%v' and channelID '%v'", c.creatorID, c.id)
-				log.Print(err)
-			}
-		})
+		if err = forEachTeamMember(sqlConn, teamMemberF(graphConn)); err != nil {
+			return err
+		}
 
-		forEachPost(db, func(p *post) {
-			err = createPostEdge(conn, p)
-			if err != nil {
-				log.Printf("[ERROR] creating edge for post '%v'", p.id)
-				log.Print(err)
-			}
-
-			err = createPostedInChannelVertex(conn, p)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between postID '%v' and channelID '%v", p.id, p.channelID)
-				log.Print(err)
-			}
-
-			err = createPostedByUserVertex(conn, p)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between postID '%v' and userID '%v", p.id, p.userID)
-				log.Print(err)
-			}
-		})
-
-		forEachTeamMember(db, func(tm *teamMember) {
-			err = createTeamMemberVertex(conn, tm)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between teamID '%v' and userID '%v'", tm.teamID, tm.userID)
-				log.Print(err)
-			}
-		})
-
-		forEachChannelMember(db, func(cm *channelMember) {
-			err = createChannelMemberVertex(conn, cm)
-			if err != nil {
-				log.Printf("[ERROR] creating vertex between channelID '%v' and userID '%v'", cm.channelID, cm.userID)
-				log.Print(err)
-			}
-		})
+		if err = forEachChannelMember(sqlConn, channelMemberF(graphConn)); err != nil {
+			return err
+		}
 
 		return nil
 	},
+}
+
+func teamF(conn golangNeo4jBoltDriver.Conn) func(*team) error {
+	return func(t *team) error {
+		err := createTeamEdge(conn, t)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func userF(conn golangNeo4jBoltDriver.Conn) func(*user) error {
+	return func(u *user) error {
+		err := createUserEdge(conn, u)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func channelF(conn golangNeo4jBoltDriver.Conn) func(*channel) error {
+	return func(c *channel) error {
+		err := createChannelEdge(conn, c)
+		if err != nil {
+			return err
+		}
+
+		err = createChannelPartOfTeamVertex(conn, c)
+		if err != nil {
+			return err
+		}
+
+		err = createUserCreatedChannelVertex(conn, c)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+}
+
+func postF(conn golangNeo4jBoltDriver.Conn) func(*post) error {
+	return func(p *post) error {
+		err := createPostEdge(conn, p)
+		if err != nil {
+			return err
+		}
+
+		err = createPostedInChannelVertex(conn, p)
+		if err != nil {
+			return err
+		}
+
+		err = createPostedByUserVertex(conn, p)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+}
+
+func teamMemberF(conn golangNeo4jBoltDriver.Conn) func(*teamMember) error {
+	return func(tm *teamMember) error {
+		err := createTeamMemberVertex(conn, tm)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func channelMemberF(conn golangNeo4jBoltDriver.Conn) func(*channelMember) error {
+	return func(cm *channelMember) error {
+		err := createChannelMemberVertex(conn, cm)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 }
 
 func init() {

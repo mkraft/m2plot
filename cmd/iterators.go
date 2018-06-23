@@ -19,13 +19,15 @@ func teamsIterator(db *sql.DB, batchSize int) func() ([]*team, error) {
 	}
 }
 
-func forEachTeam(db *sql.DB, itemF func(*team)) error {
+func forEachTeam(db *sql.DB, itemF func(*team) error) error {
 	nextBatch := teamsIterator(db, batchSize)
 	var batch []*team
 	var err error
 	for batch, err = nextBatch(); len(batch) > 0 && err == nil; batch, err = nextBatch() {
 		for _, item := range batch {
-			itemF(item)
+			if err = itemF(item); err != nil {
+				return err
+			}
 		}
 	}
 	if err != nil {
@@ -47,7 +49,7 @@ func channelsIterator(db *sql.DB, batchSize int) func() ([]*channel, error) {
 	}
 }
 
-func forEachChannel(db *sql.DB, itemF func(*channel)) error {
+func forEachChannel(db *sql.DB, itemF func(*channel) error) error {
 	nextBatch := channelsIterator(db, batchSize)
 	var batch []*channel
 	var err error
@@ -75,7 +77,7 @@ func usersIterator(db *sql.DB, batchSize int) func() ([]*user, error) {
 	}
 }
 
-func forEachUser(db *sql.DB, itemF func(*user)) error {
+func forEachUser(db *sql.DB, itemF func(*user) error) error {
 	nextBatch := usersIterator(db, batchSize)
 	var batch []*user
 	var err error
@@ -103,7 +105,7 @@ func postsIterator(db *sql.DB, batchSize int) func() ([]*post, error) {
 	}
 }
 
-func forEachPost(db *sql.DB, itemF func(*post)) error {
+func forEachPost(db *sql.DB, itemF func(*post) error) error {
 	nextBatch := postsIterator(db, batchSize)
 	var batch []*post
 	var err error
@@ -131,7 +133,7 @@ func channelMembersIterator(db *sql.DB, batchSize int) func() ([]*channelMember,
 	}
 }
 
-func forEachChannelMember(db *sql.DB, itemF func(*channelMember)) error {
+func forEachChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
 	nextBatch := channelMembersIterator(db, batchSize)
 	var batch []*channelMember
 	var err error
@@ -159,7 +161,7 @@ func teamMembersIterator(db *sql.DB, batchSize int) func() ([]*teamMember, error
 	}
 }
 
-func forEachTeamMember(db *sql.DB, itemF func(*teamMember)) error {
+func forEachTeamMember(db *sql.DB, itemF func(*teamMember) error) error {
 	nextBatch := teamMembersIterator(db, batchSize)
 	var batch []*teamMember
 	var err error
