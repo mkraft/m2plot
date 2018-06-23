@@ -28,13 +28,19 @@ import (
 // etlCmd represents the etl command
 var etlCmd = &cobra.Command{
 	Use:   "etl",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Does an initial dump of Mattermost data into Neo4j",
+	Long: `Creates the following edges:
+* Channels
+* Posts
+* Teams
+* Users
+and the following vertices:
+* user member of team
+* user member of channel
+* post posted in channel
+* post posted by user
+* channel part of team
+* user created channel`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sqlConn, err := sql.Open(
 			viper.GetString("mattermost_db.adapter"),
