@@ -36,17 +36,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sqlAdapter := viper.GetString("mattermost_db.adapter")
-		sqlConnStr := viper.GetString("mattermost_db.connectionString")
-		sqlConn, err := sql.Open(sqlAdapter, sqlConnStr)
+		sqlConn, err := sql.Open(viper.GetString("mattermost_db.adapter"), viper.GetString("mattermost_db.connectionString"))
 		if err != nil {
 			return err
 		}
 		defer sqlConn.Close()
 
-		graphConnStr := viper.GetString("neo4j.connectionString")
 		driver := golangNeo4jBoltDriver.NewDriver()
-		graphConn, err := driver.OpenNeo(graphConnStr)
+		graphConn, err := driver.OpenNeo(viper.GetString("neo4j.connectionString"))
 		if err != nil {
 			return err
 		}
