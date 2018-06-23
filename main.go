@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/mkraft/m2plot/cmd"
+import "github.com/mkraft/mattergraph/cmd"
 
 func main() {
 	cmd.Execute()

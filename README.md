@@ -1,7 +1,7 @@
-# m2plot
-(WIP) CLI to dump Mattermost data into Neo4j
+# mattergraph
+(WIP) CLI for graphing Mattermost data with Neo4j
 
 ```bash
-cp .m2plot.example.yaml $HOME/.m2plot.yaml
+cp .mattergraph.example.yaml $HOME/.mattergraph.yaml
 go run main.go etl
 ```
