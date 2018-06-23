@@ -45,8 +45,7 @@ to quickly create a Cobra application.`,
 		}
 		defer sqlConn.Close()
 
-		driver := golangNeo4jBoltDriver.NewDriver()
-		graphConn, err := driver.OpenNeo(viper.GetString("neo4j.connectionString"))
+		graphConn, err := golangNeo4jBoltDriver.NewDriver().OpenNeo(viper.GetString("neo4j.connectionString"))
 		if err != nil {
 			return err
 		}
