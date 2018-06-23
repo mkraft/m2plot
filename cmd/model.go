@@ -54,11 +54,13 @@ type user struct {
 }
 
 type post struct {
-	id       string
-	message  string
-	createAt int
-	deleteAt int
-	hashtags []string
+	id        string
+	message   string
+	createAt  int
+	deleteAt  int
+	hashtags  []string
+	channelID string
+	userID    string
 }
 
 type teamMember struct {

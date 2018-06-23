@@ -73,3 +73,23 @@ func createPostEdge(conn golangNeo4jBoltDriver.Conn, p *post) error {
 	}
 	return nil
 }
+
+func createPostedInChannelVertex(conn golangNeo4jBoltDriver.Conn, p *post) error {
+	_, err := conn.ExecNeo("MATCH (post:Post {postID: {postID}}), (channel:Channel {channelID: {channelID}}) CREATE (post)-[:POSTED_IN]->(channel)",
+		map[string]interface{}{"postID": p.id, "channelID": p.channelID},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func createPostedByUserVertex(conn golangNeo4jBoltDriver.Conn, p *post) error {
+	_, err := conn.ExecNeo("MATCH (post:Post {postID: {postID}}), (user:User {userID: {userID}}) CREATE (post)-[:POSTED_BY]->(user)",
+		map[string]interface{}{"postID": p.id, "userID": p.userID},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

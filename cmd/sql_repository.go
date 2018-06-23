@@ -58,7 +58,7 @@ func users(db *sql.DB, limit, offset int) ([]*user, error) {
 
 func posts(db *sql.DB, limit, offset int) ([]*post, error) {
 	var posts []*post
-	rows, err := db.Query("SELECT Id, Message, CreateAt, DeleteAt, Hashtags FROM Posts LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := db.Query("SELECT Id, Message, CreateAt, DeleteAt, Hashtags, ChannelId, UserId FROM Posts LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func posts(db *sql.DB, limit, offset int) ([]*post, error) {
 	hashtags := new(string)
 	for rows.Next() {
 		post := new(post)
-		if err := rows.Scan(&post.id, &post.message, &post.createAt, &post.deleteAt, hashtags); err != nil {
+		if err := rows.Scan(&post.id, &post.message, &post.createAt, &post.deleteAt, hashtags, &post.channelID, &post.userID); err != nil {
 			return nil, err
 		}
 		post.hashtags = strings.Split(*hashtags, " ")
