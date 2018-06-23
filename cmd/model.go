@@ -22,12 +22,13 @@ func (t *team) displayType() string {
 }
 
 type channel struct {
-	id       string
-	name     string
-	createAt int
-	deleteAt int
-	Type     string
-	teamID   string
+	id        string
+	name      string
+	createAt  int
+	deleteAt  int
+	Type      string
+	teamID    string
+	creatorID string
 }
 
 func (c *channel) displayType() string {

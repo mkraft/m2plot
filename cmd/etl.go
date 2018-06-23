@@ -61,23 +61,30 @@ to quickly create a Cobra application.`,
 			}
 		})
 
+		forEachUser(db, func(u *user) {
+			err = createUserEdge(conn, u)
+			if err != nil {
+				log.Printf("[ERROR] creating edge for user '%v'", u.username)
+				log.Print(err)
+			}
+		})
+
 		forEachChannel(db, func(c *channel) {
 			err = createChannelEdge(conn, c)
 			if err != nil {
 				log.Printf("[ERROR] creating edge for channel '%v'", c.name)
 				log.Print(err)
 			}
+
 			err = createChannelPartOfTeamVertex(conn, c)
 			if err != nil {
 				log.Printf("[ERROR] creating vertex between channelID '%v' and teamID '%v'", c.id, c.teamID)
 				log.Print(err)
 			}
-		})
 
-		forEachUser(db, func(u *user) {
-			err = createUserEdge(conn, u)
+			err = createUserCreatedChannelVertex(conn, c)
 			if err != nil {
-				log.Printf("[ERROR] creating edge for user '%v'", u.username)
+				log.Printf("[ERROR] creating vertex between userID '%v' and channelID '%v'", c.creatorID, c.id)
 				log.Print(err)
 			}
 		})
