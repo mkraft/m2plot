@@ -92,7 +92,7 @@ func forEachPublicPost(db *sql.DB, itemF func(*post) error) error {
 	return err
 }
 
-func forEachChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
+func forEachPublicChannelMember(db *sql.DB, itemF func(*channelMember) error) error {
 	offset := 0
 	var batch []*channelMember
 	var err error
@@ -115,6 +115,24 @@ func forEachTeamMember(db *sql.DB, itemF func(*teamMember) error) error {
 	var batch []*teamMember
 	var err error
 	for batch, err = teamMembers(db, batchSize, offset); len(batch) > 0; batch, err = teamMembers(db, batchSize, offset+batchSize) {
+		offset += batchSize
+		if err != nil {
+			return err
+		}
+		for _, item := range batch {
+			if err = itemF(item); err != nil {
+				return err
+			}
+		}
+	}
+	return err
+}
+
+func forEachPublicReaction(db *sql.DB, itemF func(*reaction) error) error {
+	offset := 0
+	var batch []*reaction
+	var err error
+	for batch, err = publicReactions(db, batchSize, offset); len(batch) > 0; batch, err = publicReactions(db, batchSize, offset+batchSize) {
 		offset += batchSize
 		if err != nil {
 			return err

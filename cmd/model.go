@@ -89,3 +89,10 @@ type channelMember struct {
 	channelID string
 	userID    string
 }
+
+type reaction struct {
+	userID    string
+	postID    string
+	emojiName string
+	createAt  string
+}

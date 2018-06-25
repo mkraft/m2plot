@@ -172,3 +172,30 @@ func publicChannelMembers(db *sql.DB, limit, offset int) ([]*channelMember, erro
 	}
 	return channelMembers, nil
 }
+
+func publicReactions(db *sql.DB, limit, offset int) ([]*reaction, error) {
+	var reactions []*reaction
+	query := fmt.Sprintf(`
+		SELECT Reactions.UserId, Reactions.PostId, EmojiName, Reactions.CreateAt
+		FROM Channels
+		JOIN Posts ON Channels.Id = Posts.ChannelId 
+		JOIN Reactions ON Reactions.PostId = Posts.Id
+		WHERE Channels.Type = 'O'
+		ORDER BY Reactions.CreateAt DESC
+		LIMIT %v 
+		OFFSET %v
+		`, limit, offset)
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		reaction := new(reaction)
+		if err := rows.Scan(&reaction.userID, &reaction.postID, &reaction.emojiName, &reaction.createAt); err != nil {
+			return nil, err
+		}
+		reactions = append(reactions, reaction)
+	}
+	return reactions, nil
+}

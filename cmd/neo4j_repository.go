@@ -127,3 +127,14 @@ func createUserCreatedChannelVertex(conn golangNeo4jBoltDriver.Conn, c *channel)
 	}
 	return nil
 }
+
+func createReactionVertex(conn golangNeo4jBoltDriver.Conn, r *reaction) error {
+	_, err := conn.ExecNeo(
+		"MATCH (post:Post {postID: {postID}}), (user:User {userID: {userID}}) CREATE (user)-[:REACTED_TO {emoji:[{emojiName}]}]->(post)",
+		map[string]interface{}{"postID": r.postID, "userID": r.userID, "emojiName": r.emojiName},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

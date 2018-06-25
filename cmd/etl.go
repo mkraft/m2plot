@@ -42,7 +42,8 @@ and the following vertices:
 * post posted in channel
 * post posted by user
 * channel part of team
-* user created channel`,
+* user created channel
+* user reacted to post with emoji`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sqlConn, err := sql.Open(
 			viper.GetString("mattermost_db.adapter"),
@@ -79,7 +80,11 @@ and the following vertices:
 			return err
 		}
 
-		if err = forEachChannelMember(sqlConn, channelMemberF(graphConn)); err != nil {
+		if err = forEachPublicChannelMember(sqlConn, channelMemberF(graphConn)); err != nil {
+			return err
+		}
+
+		if err = forEachPublicReaction(sqlConn, reactionF(graphConn)); err != nil {
 			return err
 		}
 
@@ -162,6 +167,16 @@ func teamMemberF(conn golangNeo4jBoltDriver.Conn) func(*teamMember) error {
 func channelMemberF(conn golangNeo4jBoltDriver.Conn) func(*channelMember) error {
 	return func(cm *channelMember) error {
 		err := createChannelMemberVertex(conn, cm)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func reactionF(conn golangNeo4jBoltDriver.Conn) func(*reaction) error {
+	return func(r *reaction) error {
+		err := createReactionVertex(conn, r)
 		if err != nil {
 			return err
 		}
