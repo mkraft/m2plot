@@ -1,7 +1,7 @@
 # mattergraph
 CLI to get Mattermost data into Neo4j
 
-# Setup
+## Setup
 ```bash
 docker pull neo4j
 docker run --publish=7474:7474 --publish=7687:7687 --volume=$HOME/neo4j/data:/data neo4j
@@ -15,7 +15,7 @@ cp .mattergraph.example.yaml $HOME/.mattergraph.yaml
 
 Update the Neo4j connection string in `~/.mattergraph.yaml` with the new password.
 
-# Usage
+## Usage
 
 ```bash
 go run main.go etl
