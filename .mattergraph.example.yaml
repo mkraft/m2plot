@@ -1,4 +1,6 @@
 mattermost_db:
+        # adapter: mysql
+        # connectionString: "mmuser:mostest@tcp(localhost:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s"
         adapter: postgres
         connectionString: "postgres://mmuser:mostest@localhost:5432/mattermost_test?sslmode=disable\u0026connect_timeout=30"
 neo4j:
